@@ -4,6 +4,8 @@ import openai
 from fastapi import FastAPI
 
 # Configure OpenAI API credentials
+from starlette.middleware.cors import CORSMiddleware
+
 from app.depression import Depression
 from app.questions import questions, subjective_question
 from app.schema import CheerMeUpCreate
@@ -18,6 +20,20 @@ openai.api_key = os.environ["OPENAI_API_KEY"]
 
 app = FastAPI()
 
+def add_middleware(app):
+    origins = [
+        "http://localhost",
+        "http://localhost:8080",
+        "*"
+    ]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["DELETE", "GET", "POST", "PUT"],
+        allow_headers=["*"],
+    )
 
 # Define route to generate GPT-3 response based on user input
 @app.post("/cheer-me-up/")
